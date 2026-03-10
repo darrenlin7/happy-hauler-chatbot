@@ -9,15 +9,9 @@ import streamlit as st
 
 from database import get_all_sessions, init_db
 
-st.set_page_config(
-    page_title="Past Chats — Happy Hauler",
-    page_icon="📋",
-    layout="centered",
-)
-
 init_db()
 
-st.title("📋 Past Screening Sessions")
+st.title("📋 Past Chat Sessions")
 st.caption("All completed candidate conversations, most recent first.")
 
 sessions = get_all_sessions()
@@ -48,10 +42,15 @@ for session in sessions:
     expander_label = f"{badge}  |  {created}  —  {preview}"
 
     with st.expander(expander_label):
-        col1, col2, col3 = st.columns(3)
+        col1, col2 = st.columns(2)
         col1.metric("Outcome", badge.split()[1])
-        col2.metric("Started", created)
-        col3.metric("Ended", ended or "—")
+        col2.markdown(
+            f"<div style='text-align:right'>"
+            f"<small><b>Started:</b> {created}</small><br>"
+            f"<small><b>Ended:</b> {ended or '—'}</small>"
+            f"</div>",
+            unsafe_allow_html=True,
+        )
 
         st.write("**Summary**")
         st.write(summary)
