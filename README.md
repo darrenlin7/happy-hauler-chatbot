@@ -4,6 +4,14 @@ A Python-based recruiting chatbot for **Happy Hauler Trucking Co.** that screens
 
 ---
 
+## Prerequisites
+
+- **Python 3.9+**
+- **pip**
+- An **[Anthropic API key](https://console.anthropic.com/)** (if needed I can share mine upon request)
+
+---
+
 ## Local Setup
 
 ### 1. Clone / unzip the repo
