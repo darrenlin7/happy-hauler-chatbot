@@ -4,7 +4,7 @@ A Python-based recruiting chatbot for **Happy Hauler Trucking Co.** that screens
 
 ---
 
-## Setup
+## Local Setup
 
 ### 1. Clone / unzip the repo
 
@@ -47,7 +47,8 @@ Use the **sidebar** to switch between the **Chat** page and **Past Chats**.
 
 ```
 happy-hauler-chatbot/
-├── app.py               # Streamlit entry point — chat UI
+├── app.py               # Streamlit entry point — navigation wrapper
+├── chat_page.py         # Chat UI and screening logic
 ├── pages/
 │   └── Past_Chats.py    # Streamlit page — view past sessions
 ├── state_machine.py     # Conversation state & transition logic
@@ -80,22 +81,22 @@ GREETING → ASKING_CDL → ASKING_EXPERIENCE → ASKING_OVERNIGHT → QA_OPEN �
 | `QA_OPEN` | "Any questions about the role?" | Questions answered by LLM; "no more" → `ENDED` (pass) |
 | `ENDED` | Pass/fail badge + summary shown | Terminal |
 
-### Architecture decisions
+### Design and Architecture decisions
+
+**Tech Stack**
+First thing I had to decide was which tech stack to use. I've prototyped at home with Ollama and Gradio before, but after exploring different options I settled on a stack using Python and Claude Haiku as the LLM, a Streamlit UI, and SQLite for storing past sessions.
 
 **State machine over pure LLM steering**
-Python handles all branching and transition logic. The LLM only classifies intent (returning structured JSON) and generates natural-language text. This guarantees the bot never skips a required question and always enforces follow-up logic correctly — even if the model returns unexpected output.
+Since the chatbot is only meant to ask 3 questions and answer specific questions about the company and role, I opted to add a state machine to control the conversation flow and keep it discrete. The LLM classifies intent and returns structured JSON. This guarantees the bot never skips a required question and always enforces follow-up logic correctly.
+
+**Static Data and System Prompt**
+Screening question prompts are hardcoded so have no API cost, zero latency, and consistent phrasing. To answer some of the candidate's questions, I created a config file to store company and state enums that are injected into the LLM and the rest of the app. I assumed a few of the things (location, how many days they can take off, additional benefits)
 
 **Two-call LLM pattern per turn**
-Each turn makes at most two API calls: one to classify intent (`interpret_response`), one to generate a response when needed (FAQ answers, summary). Screening question prompts are hardcoded strings — no API cost, zero latency, and perfectly consistent phrasing.
+Worked with LLM to come up with efficient way to make at most two API calls each answer: one to classify intent (`interpret_response`), one to generate a response when needed (FAQ answers, summary).
 
-**SQLite over an external database**
-Zero infrastructure to set up, works out of the box, easy to inspect with any SQLite viewer. More than adequate for this scale.
-
-**Streamlit multipage via `pages/` directory**
-Placing `Past_Chats.py` in the `pages/` folder gives automatic sidebar navigation with a single `streamlit run app.py` command — no routing code needed.
-
-**Haiku model**
-Fast, cheap, and capable enough for intent classification and short-form text generation in a screening context.
+**UI**
+I elected to keep the UI as simple as possible, with minimal styling and just using Streamlit's default components. Overall this is a blank slate that can be adapted to any brand's UI library.
 
 ---
 
