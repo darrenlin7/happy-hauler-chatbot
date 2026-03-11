@@ -75,10 +75,12 @@ class ConversationStateMachine:
 
     def _handle_cdl(self, intent: str) -> None:
         if intent == "yes":
+            self.follow_up_count = 0
             self.state = State.ASKING_EXPERIENCE
         elif intent == "no":
             self._end(passed=False, reason="no_cdl")
-        # "vague" stays in ASKING_CDL for another attempt
+        else:  # vague — stay and ask for a clear yes/no
+            self.follow_up_count += 1
 
     def _handle_experience(self, intent: str, extracted_value: str | None) -> None:
         # Only a "yes" with a parseable number counts as a clear answer
@@ -96,10 +98,12 @@ class ConversationStateMachine:
 
     def _handle_overnight(self, intent: str) -> None:
         if intent == "yes":
+            self.follow_up_count = 0
             self.state = State.QA_OPEN
-        elif intent in ("no", "vague"):
-            # Treat refusal or non-answer as a disqualifying response
+        elif intent == "no":
             self._end(passed=False, reason="no_overnight")
+        else:  # vague — stay and ask for a clear yes/no
+            self.follow_up_count += 1
 
     def _handle_qa_open(self, intent: str) -> None:
         # "no" means the candidate has no more questions → end with a pass

@@ -33,11 +33,6 @@ _GREETING_REPROMPT = (
 )
 
 _STATE_PROMPTS: dict[State, str] = {
-    State.ASKING_CDL: "Do you have a valid Class A CDL?",
-    State.ASKING_OVERNIGHT: (
-        "This role requires being on the road for two nights each week. "
-        "Is that okay with you?"
-    ),
     State.QA_OPEN: (
         "Do you have any questions about the role or Happy Hauler Trucking Co.?"
     ),
@@ -71,7 +66,7 @@ def _add_message(role: str, content: str) -> None:
 
 def _bot(text: str) -> None:
     _add_message("assistant", text)
-    with st.chat_message("assistant"):
+    with st.chat_message("assistant", avatar="🚛"):
         st.write(text)
 
 
@@ -82,6 +77,19 @@ def _screening_prompt(sm: ConversationStateMachine) -> str:
 
     if state == State.GREETING:
         return _GREETING_REPROMPT
+
+    if state == State.ASKING_CDL:
+        if sm.follow_up_count > 0:
+            return "Please answer with yes or no — do you have a valid Class A CDL?"
+        return "Do you have a valid Class A CDL?"
+
+    if state == State.ASKING_OVERNIGHT:
+        if sm.follow_up_count > 0:
+            return "Please answer with yes or no — are you okay with being on the road 2 nights per week?"
+        return (
+            "This role requires being on the road for two nights each week. "
+            "Is that okay with you?"
+        )
 
     if state == State.ASKING_EXPERIENCE:
         if sm.follow_up_count > 0:
@@ -129,7 +137,7 @@ if sm.state == State.ENDED:
         None,
     )
     if last_bot:
-        with st.chat_message("assistant"):
+        with st.chat_message("assistant", avatar="🚛"):
             st.write(last_bot)
 
     if sm.passed:
@@ -151,13 +159,14 @@ else:
 
     # Render message history
     for msg in st.session_state.messages:
-        with st.chat_message(msg["role"]):
+        avatar = "🚛" if msg["role"] == "assistant" else "👤"
+        with st.chat_message(msg["role"], avatar=avatar):
             st.write(msg["content"])
 
     # ── Chat input ────────────────────────────────────────────────────────────
     if prompt := st.chat_input("Type your response here…"):
         _add_message("user", prompt)
-        with st.chat_message("user"):
+        with st.chat_message("user", avatar="👤"):
             st.write(prompt)
 
         prev_state = sm.state

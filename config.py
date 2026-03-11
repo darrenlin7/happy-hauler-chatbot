@@ -13,7 +13,7 @@ COMPANY_NAME = "Happy Hauler Trucking Co."
 ROLE_TITLE = "Truck Driver (Class A CDL required)"
 PAY_RATE = "60–65 cents per mile, based on experience"
 SCHEDULE = "On the road 2 nights per week"
-LOCATION = "Midwest region (home base in Chicago, IL)"
+LOCATION = "Northeast region (home base in Albany, NY)"
 BENEFITS = (
     "Health insurance, dental, vision, 401(k) with company match, "
     "14 days paid time off, and a per diem for overnight stays"

@@ -5,13 +5,28 @@ Accessible from the sidebar navigation automatically (Streamlit multipage).
 Runs: streamlit run app.py  (no separate command needed)
 """
 
+from datetime import datetime, timezone
+from zoneinfo import ZoneInfo
+
 import streamlit as st
 
 from database import get_all_sessions, init_db
 
+_ET = ZoneInfo("America/New_York")
+
+
+def _to_et(iso: str) -> str:
+    """Convert a UTC ISO timestamp string to Eastern Time for display."""
+    if not iso:
+        return "—"
+    dt_utc = datetime.fromisoformat(iso).replace(tzinfo=timezone.utc)
+    dt_et = dt_utc.astimezone(_ET)
+    # e.g. "2026-03-10 03:00 PM ET"
+    return dt_et.strftime("%Y-%m-%d %I:%M %p ET")
+
 init_db()
 
-st.title("📋 Past Chat Sessions")
+st.title("Past Chat Sessions")
 st.caption("All completed candidate conversations, most recent first.")
 
 sessions = get_all_sessions()
@@ -24,8 +39,8 @@ if not sessions:
 
 for session in sessions:
     # ── Metadata ──────────────────────────────────────────────────────────────
-    created = session["created_at"][:16].replace("T", " ")
-    ended = (session.get("ended_at") or "")[:16].replace("T", " ")
+    created = _to_et(session["created_at"])
+    ended = _to_et(session.get("ended_at") or "")
     passed = session["passed"]
     summary = session.get("summary") or "No summary available."
     messages = session.get("messages", [])
@@ -59,5 +74,6 @@ for session in sessions:
         st.write("**Full Conversation**")
 
         for msg in messages:
-            with st.chat_message(msg["role"]):
+            avatar = "🚛" if msg["role"] == "assistant" else "👤"
+            with st.chat_message(msg["role"], avatar=avatar):
                 st.write(msg["content"])
