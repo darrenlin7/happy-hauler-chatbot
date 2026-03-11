@@ -13,11 +13,10 @@ COMPANY_NAME = "Happy Hauler Trucking Co."
 ROLE_TITLE = "Truck Driver (Class A CDL required)"
 PAY_RATE = "60–65 cents per mile, based on experience"
 SCHEDULE = "On the road 2 nights per week"
-MIN_EXPERIENCE_YEARS = 2
 LOCATION = "Midwest region (home base in Chicago, IL)"
 BENEFITS = (
     "Health insurance, dental, vision, 401(k) with company match, "
-    "paid time off, and a per diem for overnight stays"
+    "14 days paid time off, and a per diem for overnight stays"
 )
 
 # Injected into the LLM system prompt during QA_OPEN state
@@ -26,7 +25,6 @@ Company: {COMPANY_NAME}
 Role: {ROLE_TITLE}
 Pay: {PAY_RATE}
 Schedule: {SCHEDULE}
-Minimum Experience: {MIN_EXPERIENCE_YEARS} years preferred
 Location: {LOCATION}
 Benefits: {BENEFITS}
 """.strip()

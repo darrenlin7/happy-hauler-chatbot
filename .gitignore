@@ -1,0 +1,17 @@
+# Environment
+.env
+
+# Python bytecode
+__pycache__/
+*.pyc
+*.pyo
+
+# Database (local data, not committed)
+chatbot.db
+
+# VS Code
+.vscode/
+
+# OS
+.DS_Store
+Thumbs.db

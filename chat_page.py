@@ -123,6 +123,15 @@ if sm.state == State.ENDED:
         st.session_state.saved = True
         st.session_state.summary = summary
 
+    # Show the last bot message above the banner
+    last_bot = next(
+        (m["content"] for m in reversed(st.session_state.messages) if m["role"] == "assistant"),
+        None,
+    )
+    if last_bot:
+        with st.chat_message("assistant"):
+            st.write(last_bot)
+
     if sm.passed:
         st.success("✅  **PASSED** — Candidate meets initial qualifications.")
     else:
@@ -148,7 +157,7 @@ else:
     # ── Chat input ────────────────────────────────────────────────────────────
     if prompt := st.chat_input("Type your response here…"):
         _add_message("user", prompt)
-        with st.chat_message("user", avatar="👷"):
+        with st.chat_message("user"):
             st.write(prompt)
 
         prev_state = sm.state
